@@ -1,0 +1,34 @@
+<div style="padding: 20px; max-width: 400px">
+  <h2>Ajouter une personne</h2>
+
+  <form [formGroup]="personForm" (ngSubmit)="onSubmit()">
+    <mat-form-field appearance="outline" style="width: 100%">
+      <mat-label>Nom</mat-label>
+      <input matInput formControlName="name" placeholder="Ex: Jean Dupont" />
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" style="width: 100%">
+      <mat-label>Ville</mat-label>
+      <input matInput formControlName="city" placeholder="Ex: Paris" />
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" style="width: 100%">
+      <mat-label>Téléphone</mat-label>
+      <input
+        matInput
+        formControlName="phoneNumber"
+        placeholder="Ex: 0601020304"
+      />
+    </mat-form-field>
+
+    <button
+      mat-raised-button
+      color="primary"
+      type="submit"
+      [disabled]="personForm.invalid"
+    >
+      Enregistrer
+    </button>
+    <button mat-button type="button" routerLink="/">Annuler</button>
+  </form>
+</div>

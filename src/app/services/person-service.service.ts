@@ -7,17 +7,15 @@ import { tap } from 'rxjs';
   providedIn: 'root',
 })
 export class PersonServiceService {
-  // Injection de HttpClient
   private personHttp = inject(HttpClient);
-  constructor() {}
 
-  private apiUrl = 'http://localhost:8080/api/persons/';
+  private apiUrl = 'http://localhost:8080/api/persons';
 
   // 1. Signal PRIVE contenant la liste mutable des personnes
   private personList = signal<Person[]>([]);
 
-  // 2. Signal PUBLIC en LECTURE SEULE pour les composants
-  private readonly = this.personList.asReadonly();
+  // 2. Signal PUBLIC en LECTURE SEULE accessible par les composants
+  public readonly persons = this.personList.asReadonly();
 
   /**
    * Récupère la liste depuis Spring Boot et remplace le contenu du Signal
@@ -42,7 +40,7 @@ export class PersonServiceService {
    * Envoie une nouvelle personne au backend et met à jour le Signal localement
    */
   addPerson(person: Person) {
-    this.personHttp.post<Person>(`${this.apiUrl}/create`, person).pipe(
+    return this.personHttp.post<Person>(`${this.apiUrl}/create`, person).pipe(
       tap((newPerson) => {
         this.personList.update((currentPersons) => [
           ...currentPersons,
@@ -56,7 +54,7 @@ export class PersonServiceService {
    * Met à jour une personne existante
    */
   updatePerson(id: number, person: Person) {
-    this.personHttp.put<Person>(`${this.apiUrl}/update/${id}`, person).pipe(
+    return this.personHttp.put<Person>(`${this.apiUrl}/update/${id}`, person).pipe(
       tap((updatedPerson) => {
         this.personList.update((currentPersons) =>
           currentPersons.map((p) => (p.id === id ? updatedPerson : p)),
@@ -69,12 +67,15 @@ export class PersonServiceService {
    * Supprime une personne côté backend et la retire du Signal local
    */
   deletePerson(id: number) {
-    this.personHttp.delete<Person>(`${this.apiUrl}/delete/${id}`).pipe(
-      tap(() => {
-        this.personList.update((currentPersons) =>
-          currentPersons.filter((p) => p.id !== id),
-        );
-      }),
-    );
+    // responseType: 'text' est requis car Spring Boot renvoie la chaîne "Deleted"
+    return this.personHttp
+      .delete(`${this.apiUrl}/delete/${id}`, { responseType: 'text' })
+      .pipe(
+        tap(() => {
+          this.personList.update((currentPersons) =>
+            currentPersons.filter((p) => p.id !== id),
+          );
+        }),
+      );
   }
 }
