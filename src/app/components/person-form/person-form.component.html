@@ -1,34 +1,50 @@
-<div style="padding: 20px; max-width: 400px">
-  <h2>Ajouter une personne</h2>
+<div class="form-container">
+  <h2>{{ isEditMode() ? "Modifier la personne" : "Ajouter une personne" }}</h2>
 
-  <form [formGroup]="personForm" (ngSubmit)="onSubmit()">
-    <mat-form-field appearance="outline" style="width: 100%">
-      <mat-label>Nom</mat-label>
+  <form [formGroup]="personForm" (ngSubmit)="onSubmit()" class="person-form">
+    <!-- Champ Nom -->
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Nom complet</mat-label>
       <input matInput formControlName="name" placeholder="Ex: Jean Dupont" />
+      @if (personForm.get("name")?.hasError("required")) {
+        <mat-error>Le nom est obligatoire</mat-error>
+      }
     </mat-form-field>
 
-    <mat-form-field appearance="outline" style="width: 100%">
+    <!-- Champ Ville -->
+    <mat-form-field appearance="outline" class="full-width">
       <mat-label>Ville</mat-label>
       <input matInput formControlName="city" placeholder="Ex: Paris" />
+      @if (personForm.get("city")?.hasError("required")) {
+        <mat-error>La ville est obligatoire</mat-error>
+      }
     </mat-form-field>
 
-    <mat-form-field appearance="outline" style="width: 100%">
-      <mat-label>Téléphone</mat-label>
+    <!-- Champ Téléphone -->
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Numéro de téléphone</mat-label>
       <input
         matInput
         formControlName="phoneNumber"
         placeholder="Ex: 0601020304"
       />
+      @if (personForm.get("phoneNumber")?.hasError("required")) {
+        <mat-error>Le téléphone est obligatoire</mat-error>
+      }
     </mat-form-field>
 
-    <button
-      mat-raised-button
-      color="primary"
-      type="submit"
-      [disabled]="personForm.invalid"
-    >
-      Enregistrer
-    </button>
-    <button mat-button type="button" routerLink="/">Annuler</button>
+    <!-- Actions -->
+    <div class="form-actions">
+      <button
+        mat-raised-button
+        color="primary"
+        type="submit"
+        [disabled]="personForm.invalid"
+      >
+        {{ isEditMode() ? "Mettre à jour" : "Enregistrer" }}
+      </button>
+
+      <button mat-button type="button" routerLink="/">Annuler</button>
+    </div>
   </form>
 </div>
